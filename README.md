@@ -13,14 +13,14 @@ f <- "Dataset.zip"
 if (!file.exists(path)) {
   dir.create(path)
 }
-download.file(url, file.path(path, f))
+download.file(url, file.path(path, f),quiet = TRUE)
 
 #Unzip the file
 unzip(zipfile="./data/Dataset.zip",exdir="./data")
 #unzipped files are in the folder UCI HAR Dataset. Get the list of the files
 pathIn <- file.path("./data" , "UCI HAR Dataset")
 files<-list.files(pathIn, recursive=TRUE)
-files
+
 
 #Read the files
 
@@ -51,6 +51,9 @@ dt <- rbind(dtTrain, dtTest)
 #Merging columns
 dtSubject <- cbind(dtSubject, dtActivity)
 dt <- cbind(dtSubject, dt)
+
+#Variable names
+names(dt)
 
 #Set key
 setkey(dt, subject, activityNum)
@@ -139,10 +142,11 @@ setkey(dt, subject, activity, featDomain, featAcceleration, featInstrument,
 dtTidy <- dt[, list(count = .N, average = mean(value)), by = key(dt)]
 dtTidy
 
-library(plyr);
+library(plyr)
 write.table(dtTidy, file = "tidydata2.txt",row.name=FALSE)
 
 #Make codebook.
 require(knitr)
 require(markdown)
-knit2html("codebook.Rmd")
+knit2html("run_analysis.Rmd","CodeBook")
+markdownToHTML("run_analysis.md","run_analysis.html")
